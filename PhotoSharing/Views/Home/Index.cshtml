@@ -1,0 +1,29 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<h2>Upload image</h2>
+
+<div class="row">
+    @using (Html.BeginForm("Upload", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <label class="btn btn-default">
+            <input type="file" id="file1" name="file1" hidden />
+        </label>
+        <input type="submit" class="btn btn-primary" name="Submit" id="Submit" value="Upload" />
+        <div class="checkbox">
+            <label><input type="checkbox" value=""/>Make private</label>
+        </div>
+    }
+</div>
+
+<h2>Uploaded images</h2>
+
+<div class="row">
+    <ul class="list-group">
+        @foreach (var item in Directory.GetFiles(Path.Combine(Server.MapPath("~"), "Images")))
+        {
+            <li class="list-group-item">@Path.GetFileName(item)</li>
+        }
+    </ul>
+</div>

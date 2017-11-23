@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.Azure;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,8 +12,22 @@ namespace PhotoSharing.Controllers
 {
     public class HomeController : Controller
     {
+        CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
+                   CloudConfigurationManager.GetSetting("StorageConnectionString"));
+
         public ActionResult Index()
         {
+            var blobClient = storageAccount.CreateCloudBlobClient();
+            var container = blobClient.GetContainerReference("images1");
+
+            List<string> blobs = new List<string>();
+
+            foreach(var blob in container.ListBlobs())
+            {
+                blobs.Add(Path.GetFileName(blob.Uri.AbsolutePath));
+            }
+
+            ViewBag.Blobs = blobs.ToArray();
             return View();
         }
 
@@ -38,12 +55,18 @@ namespace PhotoSharing.Controllers
                 if (file != null && file.ContentLength > 0)
                 {
                     var fileName = Path.GetFileName(file.FileName);
-                    var path = Path.Combine(Server.MapPath("~/Images/"), fileName);
-                    file.SaveAs(path);
+
+                    var blobClient = storageAccount.CreateCloudBlobClient();
+                    var container = blobClient.GetContainerReference("images1");
+
+                    CloudBlockBlob blockBlob = container.GetBlockBlobReference(fileName);
+
+                    // Create or overwrite the "myblob" blob with contents from a local file.
+                    blockBlob.UploadFromStream(file.InputStream);
                 }
             }
 
-            return View("Index");
+            return RedirectToAction("Index");
         }
     }
 }

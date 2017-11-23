@@ -1,5 +1,6 @@
 ﻿@{
     ViewBag.Title = "Home Page";
+    string[] blobs = (string[])ViewBag.Blobs;
 }
 
 <h2>Upload image</h2>
@@ -21,9 +22,9 @@
 
 <div class="row">
     <ul class="list-group">
-        @foreach (var item in Directory.GetFiles(Path.Combine(Server.MapPath("~"), "Images")))
+        @foreach (var item in blobs)
         {
-            <li class="list-group-item">@Path.GetFileName(item)</li>
+            <li class="list-group-item">@item</li>
         }
     </ul>
 </div>

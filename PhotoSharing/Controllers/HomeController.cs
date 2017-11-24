@@ -1,6 +1,7 @@
 ﻿using Microsoft.Azure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using PhotoSharing.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,14 +21,19 @@ namespace PhotoSharing.Controllers
             var blobClient = storageAccount.CreateCloudBlobClient();
             var container = blobClient.GetContainerReference("images1");
 
-            List<string> blobs = new List<string>();
+            List<BlobViewModel> blobs = new List<BlobViewModel>();
 
             foreach(var blob in container.ListBlobs())
             {
-                blobs.Add(Path.GetFileName(blob.Uri.AbsolutePath));
+                blobs.Add(new BlobViewModel
+                {
+                    Name = Path.GetFileName(blob.Uri.AbsolutePath),
+                    Url = blob.Uri.AbsoluteUri,
+                    ThumbnailUrl = blob.Uri.AbsoluteUri // TODO use actual thumbnail url
+                });
             }
 
-            ViewBag.Blobs = blobs.ToArray();
+            ViewBag.Blobs = blobs;
             return View();
         }
 

@@ -1,6 +1,7 @@
-﻿@{
+﻿@using PhotoSharing.Models
+@{
     ViewBag.Title = "Home Page";
-    string[] blobs = (string[])ViewBag.Blobs;
+    List<BlobViewModel> blobs = (List<BlobViewModel>)ViewBag.Blobs;
 }
 
 <h2>Upload image</h2>
@@ -24,7 +25,7 @@
     <ul class="list-group">
         @foreach (var item in blobs)
         {
-            <li class="list-group-item">@item</li>
+            <li class="list-group-item">@item.Name <img src="@item.ThumbnailUrl" width="100" /></li>
         }
     </ul>
 </div>

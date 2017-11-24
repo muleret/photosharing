@@ -25,7 +25,7 @@
     <ul class="list-group">
         @foreach (var item in blobs)
         {
-            <li class="list-group-item">@item.Name <img src="@item.ThumbnailUrl" width="100" /></li>
+            <li class="list-group-item"><a href="@item.Url">@item.Name</a><img src="@item.ThumbnailUrl" width="100" /></li>
         }
     </ul>
 </div>

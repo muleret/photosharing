@@ -4,6 +4,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using PhotoSharing.Models;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -23,13 +24,23 @@ namespace PhotoSharing.Controllers
 
             List<BlobViewModel> blobs = new List<BlobViewModel>();
 
-            foreach(var blob in container.ListBlobs())
+            foreach (var blob in container.ListBlobs())
             {
+                string fileNameFull = blob.Uri.AbsoluteUri;
+
+                if (fileNameFull.Contains(".thumb"))
+                    continue;
+
+                string fileName = Path.GetFileName(fileNameFull);
+
+                var fileNameThumbFull = Path.Combine(Path.GetDirectoryName(fileNameFull),
+                    Path.GetFileNameWithoutExtension(fileNameFull) + ".thumb" + Path.GetExtension(fileName));
+
                 blobs.Add(new BlobViewModel
                 {
                     Name = Path.GetFileName(blob.Uri.AbsolutePath),
                     Url = blob.Uri.AbsoluteUri,
-                    ThumbnailUrl = blob.Uri.AbsoluteUri // TODO use actual thumbnail url
+                    ThumbnailUrl = fileNameThumbFull
                 });
             }
 
@@ -60,15 +71,27 @@ namespace PhotoSharing.Controllers
 
                 if (file != null && file.ContentLength > 0)
                 {
+                    // x.jpg => x.thumb.jpg
                     var fileName = Path.GetFileName(file.FileName);
+                    string fileNameFull = Path.GetTempFileName() + Path.GetExtension(fileName);
+                    file.SaveAs(fileNameFull);
+                    var fileNameThumbFull = Path.Combine(Path.GetDirectoryName(fileNameFull),
+                        Path.GetFileNameWithoutExtension(fileName) + ".thumb" + Path.GetExtension(fileName));
+                    var fileNameThumb = Path.GetFileName(fileNameThumbFull);
 
                     var blobClient = storageAccount.CreateCloudBlobClient();
                     var container = blobClient.GetContainerReference("images1");
 
+                    Image image = Image.FromFile(fileNameFull);
+                    Image thumb = image.GetThumbnailImage(120, 120, () => false, IntPtr.Zero);
+                    thumb.Save(fileNameThumbFull);
+
                     CloudBlockBlob blockBlob = container.GetBlockBlobReference(fileName);
+                    CloudBlockBlob blockBlobThumb = container.GetBlockBlobReference(fileNameThumb);
 
                     // Create or overwrite the "myblob" blob with contents from a local file.
                     blockBlob.UploadFromStream(file.InputStream);
+                    blockBlobThumb.UploadFromFile(fileNameThumbFull);
                 }
             }
 

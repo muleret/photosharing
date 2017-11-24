@@ -24,8 +24,11 @@ namespace PhotoSharing.Controllers
             var container = blobClient.GetContainerReference("images1");
 
             List<BlobViewModel> blobs = new List<BlobViewModel>();
+            var sortedBlobs = container.ListBlobs().Cast<CloudBlob>().ToList();
+            sortedBlobs.ForEach(b => b.FetchAttributes());
+            sortedBlobs = sortedBlobs.OrderByDescending(b => b.Properties.LastModified).ToList();
 
-            foreach (var blob in container.ListBlobs())
+            foreach (var blob in sortedBlobs)
             {
                 string fileNameFull = blob.Uri.AbsoluteUri;
 

@@ -83,7 +83,9 @@ namespace PhotoSharing.Controllers
                     var container = blobClient.GetContainerReference("images1");
 
                     Image image = Image.FromFile(fileNameFull);
-                    Image thumb = image.GetThumbnailImage(120, 120, () => false, IntPtr.Zero);
+                    double ratio = image.Width / (image.Height * 1.0);
+                    int theight = 100;
+                    Image thumb = image.GetThumbnailImage((int)(ratio * theight), theight, () => false, IntPtr.Zero);
                     thumb.Save(fileNameThumbFull);
 
                     CloudBlockBlob blockBlob = container.GetBlockBlobReference(fileName);

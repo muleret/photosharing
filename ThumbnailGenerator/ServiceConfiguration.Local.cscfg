@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServiceConfiguration serviceName="ThumbnailGenerator" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" osFamily="5" osVersion="*" schemaVersion="2015-04.2.6">
+  <Role name="WorkerRole1">
+    <Instances count="1" />
+    <ConfigurationSettings>
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
+      <Setting name="APPINSIGHTS_INSTRUMENTATIONKEY" value="8385824a-372c-41ab-970f-832c6a772498" />
+      <Setting name="StorageConnectionString" value="DefaultEndpointsProtocol=https;AccountName=ourphotostore;AccountKey=kF/rOcQ7N2jsg3mc1EHEetF5QhoMTh/DzPZJSIitzov9ZuEHhoxmLWvB+kdmX/9Fab4bwuMXusJEMYpEibOMGA==;EndpointSuffix=core.windows.net" />
+    </ConfigurationSettings>
+  </Role>
+</ServiceConfiguration>

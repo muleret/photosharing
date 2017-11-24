@@ -1,6 +1,7 @@
 ﻿using Microsoft.Azure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.Queue;
 using PhotoSharing.Models;
 using System;
 using System.Collections.Generic;
@@ -75,25 +76,18 @@ namespace PhotoSharing.Controllers
                     var fileName = Path.GetFileName(file.FileName);
                     string fileNameFull = Path.GetTempFileName() + Path.GetExtension(fileName);
                     file.SaveAs(fileNameFull);
-                    var fileNameThumbFull = Path.Combine(Path.GetDirectoryName(fileNameFull),
-                        Path.GetFileNameWithoutExtension(fileName) + ".thumb" + Path.GetExtension(fileName));
-                    var fileNameThumb = Path.GetFileName(fileNameThumbFull);
 
                     var blobClient = storageAccount.CreateCloudBlobClient();
                     var container = blobClient.GetContainerReference("images1");
 
-                    Image image = Image.FromFile(fileNameFull);
-                    double ratio = image.Width / (image.Height * 1.0);
-                    int theight = 100;
-                    Image thumb = image.GetThumbnailImage((int)(ratio * theight), theight, () => false, IntPtr.Zero);
-                    thumb.Save(fileNameThumbFull);
-
                     CloudBlockBlob blockBlob = container.GetBlockBlobReference(fileName);
-                    CloudBlockBlob blockBlobThumb = container.GetBlockBlobReference(fileNameThumb);
+
+                    CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
+                    var tnQueue = queueClient.GetQueueReference("thumbnailqueue");
+                    tnQueue.AddMessage(new CloudQueueMessage(blockBlob.StorageUri.PrimaryUri.AbsoluteUri));
 
                     // Create or overwrite the "myblob" blob with contents from a local file.
                     blockBlob.UploadFromStream(file.InputStream);
-                    blockBlobThumb.UploadFromFile(fileNameThumbFull);
                 }
             }
 

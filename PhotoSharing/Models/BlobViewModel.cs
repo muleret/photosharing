@@ -10,5 +10,6 @@ namespace PhotoSharing.Models
         public string Name { get; set; }
         public string Url { get; set; }
         public string ThumbnailUrl { get; set; }
+        public DateTimeOffset Created { get; set; }
     }
 }

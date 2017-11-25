@@ -24,9 +24,8 @@ namespace PhotoSharing.Controllers
             var container = blobClient.GetContainerReference("images1");
 
             List<BlobViewModel> blobs = new List<BlobViewModel>();
-            var sortedBlobs = container.ListBlobs().Cast<CloudBlob>().ToList();
-            sortedBlobs.ForEach(b => b.FetchAttributes());
-            sortedBlobs = sortedBlobs.OrderByDescending(b => b.Properties.LastModified).ToList();
+            var sortedBlobs = container.ListBlobs()
+                .OfType<CloudBlockBlob>().OrderByDescending(b => b.Properties.LastModified).ToList();
 
             foreach (var blob in sortedBlobs)
             {
@@ -44,7 +43,8 @@ namespace PhotoSharing.Controllers
                 {
                     Name = Path.GetFileName(blob.Uri.AbsolutePath),
                     Url = blob.Uri.AbsoluteUri,
-                    ThumbnailUrl = fileNameThumbFull
+                    ThumbnailUrl = fileNameThumbFull,
+                    Created = blob.Properties.LastModified != null ? blob.Properties.LastModified.Value : DateTimeOffset.MinValue
                 });
             }
 

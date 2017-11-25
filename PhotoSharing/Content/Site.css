@@ -22,3 +22,15 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.image-box {
+    border: 1px solid lightgray;
+    border-radius: 2px;
+    margin: 0 15px 10px 0;
+    padding: 10px;
+    min-width: 200px;
+}
+
+.image-box span {
+    color: #808080;
+}

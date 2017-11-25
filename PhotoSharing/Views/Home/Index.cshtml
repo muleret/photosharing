@@ -25,14 +25,55 @@ Download our Android app to upload from your mobile phone:
 <h2>Uploaded images</h2>
 
 <div class="row">
-    <ul class="list-group">
+    <div style="display:flex;flex-flow: row wrap;">
         @foreach (var item in blobs)
         {
-            <li class="list-group-item">
+            <div class="image-box">
                 <a href="@item.Url"><img src="@item.ThumbnailUrl" width="100" /></a>
-                <br/>
+                <br />
                 <span><small>@TimeZoneInfo.ConvertTime(item.Created, TimeZoneInfo.Local)</small></span>
-            </li>
+            </div>
         }
-    </ul>
+    </div>
 </div>
+
+<div id="galleryModal" class="modal">
+    <span class="gallery-close cursor" onclick="closeModal()">&times;</span>
+    <div class="modal-content">
+        <div class="gallery-slide">
+            <div class="numbertext"></div>
+            <img src="#" style="width:100%">
+        </div>
+
+        <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+        <a class="next" onclick="plusSlides(1)">&#10095;</a>
+
+        <div class="caption-container">
+            <p id="caption"></p>
+        </div>
+
+        <div class="column">
+            <img class="demo cursor" src="" style="width:100%" onclick="currentSlide(1)" alt="">
+        </div>
+        <div class="column">
+            <img class="demo cursor" src="" style="width:100%" onclick="currentSlide(2)" alt="">
+        </div>
+        <div class="column">
+            <img class="demo cursor" src="" style="width:100%" onclick="currentSlide(3)" alt="">
+        </div>
+        <div class="column">
+            <img class="demo cursor" src="" style="width:100%" onclick="currentSlide(4)" alt="">
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $(".image-box a").click(function (e) {
+                e.preventDefault();
+                openModal();
+            })
+        });
+    </script>
+}
